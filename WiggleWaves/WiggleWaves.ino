@@ -13,9 +13,10 @@ int sensorTime = 0;
 
 int maxX = 1200;
 int maxY = 3500;
-int posX = maxX/2;
-int posY = 0;
-int pastAmp = 0;
+
+int corePosX = maxX/2;
+int corePosY = 0;
+
 bool movingRight = true; 
 
 int soundLevel = 0;
@@ -37,66 +38,48 @@ void setup() {
 void loop() {
 
   sensorTime++;
-  int val = analogRead(sensorPin);
-  //val = analogRead(sensorPin);
-  //Serial.println (sensorTime);
-  //if(val<52) 
-  //delay(500);
-  //Serial.println (val, DEC);
-
-
   
-  if (posY > maxY) {
+  if (corePosY > maxY) {
     return;
   }
   
-  if(posX >= maxX || posX <= 0) {
+  if(corePosX >= maxX || corePosX <= 0) {
     movingRight = !movingRight;
     down(60);
   }
 
-  int amp = soundLevel*5;
-  if (amp>50) amp = 50;
-
-  myMotor1->setSpeed(amp);  
-  myMotor2->setSpeed(amp); 
-  
-  Serial.println (amp);
-  flux(amp-pastAmp);
-  pastAmp = amp;
+  for(int i=0; i<2 ;i++){
+    int wiggleY = random(-10,10);
+    int wiggleX = random(-10,10);
+    wiggle(wiggleX, wiggleY);
+  }
 
   movingRight ? right(2) : left(2);
 }
 
-void flux(int delta){
-  if (delta > 0)
-  {
-    up(delta);
-  }
-  else
-  {
-    down(-1 * delta);
-  }
+void wiggle(int deltaX, int deltaY){
+  deltaX>0 ? right(deltaX) : left(deltaX * -1);
+  deltaY>0 ? up(deltaY) : down(deltaY * -1);
 }
 
 void up(int length) {
   drawVerticalLine(length, false);
-  posY -= length;
+  corePosY -= length;
 }
 
 void down(int length) {
   drawVerticalLine(length, true); 
-  posY += length;
+  corePosY += length;
 }
 
 void right(int length) {
   drawHorizontalLine(length, false);
-  posX += length;
+  corePosX += length;
 }
 
 void left(int length) {
   drawHorizontalLine(length, true);
-  posX -= length;
+  corePosX -= length;
 }
 
 void drawHorizontalLine(int length, bool leftToRight) {
@@ -168,11 +151,11 @@ void printInt(String label, int integer)
 
 // Basic horizontal line algorithm: 
 void BasicHorizontalLine(){
-  if (posY > maxY) {
+  if (corePosY > maxY) {
     return;
   }
   
-  if(posX >= maxX || posX <= 0) {
+  if(corePosX >= maxX || corePosX <= 0) {
     movingRight = !movingRight;
     down(50);
   }
